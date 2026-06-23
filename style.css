@@ -1,0 +1,285 @@
+/* ================================================================= */
+/* ARQUIVO: style.css                                                */
+/* RESUMO: Folha de estilos global do sistema Sr. Papel.             */
+/* ================================================================= */
+
+:root {
+    --azul-bic: #003BB0;
+    --azul-bic-claro: #1A5CE5;
+    --fundo-pastel: #FFF5F7;
+    --menu-pastel: #FCE8EC;
+    --branco: #FFFFFF;
+    --texto-escuro: #4A4A4A;
+    --texto-claro: #888888;
+    --sucesso: #48C774;
+    --alerta: #FFDD57;
+    --perigo: #F14668;
+    --borda: #F0D5DB;
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif; 
+}
+
+body { 
+    background-color: var(--fundo-pastel); 
+    color: var(--texto-escuro); 
+    display: flex; 
+    height: 100vh; 
+    overflow: hidden; 
+}
+
+/* ========================================== */
+/* LAYOUT BASE                                */
+/* ========================================== */
+.app-layout { 
+    display: flex; 
+    width: 100%; 
+    height: 100%; 
+}
+
+.sidebar { 
+    width: 250px; 
+    background-color: var(--menu-pastel); 
+    padding: 20px; 
+    border-right: 2px solid var(--borda); 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.sidebar h2 { 
+    font-size: 1.2rem; 
+    color: var(--azul-bic); 
+    margin-bottom: 30px; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
+
+.menu-label { 
+    font-size: 0.85rem; 
+    color: var(--texto-claro); 
+    margin-bottom: 10px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: 600; 
+}
+
+.menu-item { 
+    display: block; 
+    padding: 12px 15px; 
+    margin-bottom: 8px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    color: var(--texto-escuro); 
+    font-weight: 500; 
+    text-decoration: none; 
+    border: 2px solid transparent; 
+}
+
+.menu-item:hover { 
+    background-color: var(--branco); 
+    border-color: var(--azul-bic); 
+    color: var(--azul-bic); 
+}
+
+.main-content { 
+    flex: 1; 
+    padding: 30px; 
+    overflow-y: auto; 
+}
+
+/* ========================================== */
+/* COMPONENTES GERAIS                         */
+/* ========================================== */
+.banner-header { 
+    background: linear-gradient(135deg, var(--azul-bic), var(--azul-bic-claro)); 
+    color: var(--branco); 
+    padding: 30px; 
+    border-radius: 16px; 
+    text-align: center; 
+    margin-bottom: 25px; 
+    box-shadow: 0 8px 15px rgba(0, 59, 176, 0.2); 
+}
+
+.banner-header h1 { 
+    font-size: 2rem; 
+    margin-bottom: 5px; 
+}
+
+.card { 
+    background: var(--branco); 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+    border: 1px solid var(--borda); 
+}
+
+/* NOVOS ALERTAS FLUIDOS (Substitui alerta-sucesso e alerta-erro) */
+.alert-container {
+    animation: fadeInDown 0.5s ease-out;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ========================================== */
+/* CATÁLOGO                                   */
+/* ========================================== */
+.action-bar { 
+    display: flex; 
+    gap: 15px; 
+    margin-bottom: 30px; 
+}
+
+.btn-pastel { 
+    flex: 1; 
+    background: var(--branco); 
+    border: 1px solid var(--borda); 
+    padding: 12px; 
+    text-align: center; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+}
+
+.btn-pastel:hover { 
+    background: var(--menu-pastel); 
+}
+
+.produtos-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px; 
+}
+
+.produto-card h3 { 
+    color: var(--azul-bic); 
+    margin-bottom: 5px; 
+}
+
+.produto-card .codigo { 
+    font-size: 0.75rem; 
+    color: var(--texto-claro); 
+    margin-bottom: 15px; 
+}
+
+.produto-card .preco { 
+    margin: 5px 0; 
+}
+
+.produto-card .atacado { 
+    font-size: 0.85rem; 
+    color: var(--texto-claro); 
+    margin-bottom: 15px;
+}
+
+.status { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    margin-bottom: 15px; 
+    display: inline-block; 
+}
+
+.status.estoque { color: var(--sucesso); }
+.status.pouco { color: var(--alerta); }
+.status.esgotado { color: var(--perigo); }
+
+.btn-comprar { 
+    width: 100%; 
+    padding: 10px; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    background-color: var(--azul-bic); 
+    color: var(--branco); 
+    transition: 0.2s; 
+}
+
+.btn-comprar:hover { 
+    background-color: var(--azul-bic-claro); 
+}
+
+/* Efeito para o card todo ficar cinza quando esgotado */
+.produto-card.esgotado {
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+/* Botão amarelo para o 'Avise-me' */
+.btn-avise-me {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--alerta); 
+    color: var(--texto-escuro);     
+    transition: 0.2s;
+}
+
+.btn-avise-me:hover {
+    filter: brightness(0.9); 
+}
+
+/* ========================================== */
+/* CAIXA e FORMULÁRIOS                        */
+/* ========================================== */
+.input-leitor { 
+    padding: 12px; 
+    border: 2px solid var(--borda); 
+    border-radius: 8px; 
+    font-size: 1rem; 
+    outline: none; 
+}
+
+.input-leitor:focus { 
+    border-color: var(--azul-bic); 
+}
+
+.btn-confirmar { 
+    padding: 12px 20px; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    color: var(--branco); 
+}
+
+/* ========================================== */
+/* GERÊNCIA (TABELA)                          */
+/* ========================================== */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    background: var(--branco); 
+    border-radius: 12px; 
+    overflow: hidden; 
+}
+
+th, td { 
+    padding: 12px 15px; 
+    text-align: left; 
+    border-bottom: 1px solid var(--borda); 
+    font-size: 0.9rem; 
+}
+
+th { 
+    background-color: var(--menu-pastel); 
+    color: var(--azul-bic); 
+    font-weight: 600; 
+}
+
+tr:hover { 
+    background-color: var(--fundo-pastel); 
+}

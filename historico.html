@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="banner-header">
+    <h1>Histórico de Vendas</h1>
+    <p>Auditoria de faturamento da Sr. Papel</p>
+</div>
+
+<div class="card">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="text-align: left;">Data</th>
+                <th style="text-align: left;">Itens</th>
+                <th style="text-align: left;">Forma Pgto</th>
+                <th style="text-align: right;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% for v in vendas %}
+            <tr style="border-bottom: 1px solid var(--borda);">
+                
+                <td style="padding: 15px 0; color: var(--texto-claro);">
+                    {{ v.data }}
+                </td>
+                
+                <td style="padding: 15px 0;">
+                    {% for item in v.itens %}
+                        <span style="font-weight: 500;">{{ item.qtd }}x</span> {{ item.nome }}<br>
+                    {% endfor %}
+                </td>
+                
+                <td style="padding: 15px 0;">
+                    <span style="background-color: var(--fundo-pastel); padding: 5px 10px; border-radius: 5px; font-size: 0.9rem;">
+                        {{ v.forma_pgto }}
+                    </span>
+                </td>
+                
+                <td style="text-align: right; padding: 15px 0; color: var(--azul-bic);">
+                    <b>R$ {{ "%.2f"|format(v.get('total_pagar', 0)) }}</b>
+                </td>
+                
+            </tr>
+            
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 30px; color: var(--texto-claro);">
+                    Nenhuma venda realizada ainda.
+                </td>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}

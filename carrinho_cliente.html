@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="card" style="padding: 20px; margin: 20px; overflow: hidden;">
+    <h2 style="color: var(--azul-bic); margin-bottom: 20px;">🛒 Seu Carrinho</h2>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        
+        {% for sku, item in carrinho.items() %}
+        <tr style="border-bottom: 1px solid var(--borda);">
+            
+            <td style="padding: 15px 0;">
+                <span style="font-weight: 500;">{{ item.nome }}</span>
+                
+                {% if produto_esta_esgotado(sku) %}
+                    <br><span style="color: var(--perigo); font-size: 0.8rem; font-weight: bold;">❌ Produto Esgotado!</span>
+                {% endif %}
+            </td>
+            
+            <td style="padding: 15px 0;">
+                {% if not produto_esta_esgotado(sku) %}
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    
+                    <form action="/alterar_qtd_cliente/{{ sku }}" method="POST">
+                        <input type="hidden" name="acao" value="diminuir">
+                        <button type="submit" class="btn-confirmar" style="padding: 2px 10px; background: var(--texto-claro);">−</button>
+                    </form>
+                    
+                    <b>{{ item.qtd }}</b>
+                    
+                    <form action="/alterar_qtd_cliente/{{ sku }}" method="POST">
+                        <input type="hidden" name="acao" value="aumentar">
+                        <button type="submit" class="btn-confirmar" style="padding: 2px 10px; background: var(--azul-bic);">+</button>
+                    </form>
+                </div>
+                {% endif %}
+            </td>
+
+            <td style="text-align: right; padding: 15px 0;">
+                <span style="font-weight: 600;">R$ {{ "%.2f"|format(item.preco * item.qtd) }}</span>
+                
+                <form action="/remover_carrinho_cliente/{{ sku }}" method="POST" style="display:inline; margin-left: 10px;">
+                    <button type="submit" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;" title="Remover Item">🗑️</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center; border-top: 2px dashed var(--borda); padding-top: 20px;">
+        <p style="font-size: 1.3rem; font-weight: bold; color: var(--azul-bic);">Total: R$ {{ "%.2f"|format(total) }}</p>
+        
+        <form action="/limpar_carrinho_cliente" method="POST">
+            <button type="submit" class="btn-confirmar" style="background: var(--perigo); font-size: 0.9rem;">Limpar Carrinho</button>
+        </form>
+    </div>
+    
+    <a href="/finalizar_pedido_whatsapp" class="btn-pastel" style="display: block; margin-top: 20px; text-align: center; text-decoration: none; font-size: 1.1rem; padding: 15px; background-color: var(--sucesso); color: white;">
+        📲 Finalizar Pedido via WhatsApp
+    </a>
+</div>
+{% endblock %}

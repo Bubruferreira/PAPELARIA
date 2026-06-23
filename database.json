@@ -1,0 +1,29 @@
+{
+    "usuarios": {
+        "gerente": {
+            "senha": "123",
+            "cargo": "gerencia",
+            "nome": "Gerente Principal"
+        },
+        "caixa": {
+            "senha": "123",
+            "cargo": "operador",
+            "nome": "Operador de Caixa"
+        }
+    },
+    "produtos": {
+        "123": {
+            "nome": "pedro",
+            "preco_varejo": 989.99,
+            "preco_atacado": 500.0,
+            "quantidade": 2
+        },
+        "1234": {
+            "nome": "bruna",
+            "preco_varejo": 999.98,
+            "preco_atacado": 550.49,
+            "quantidade": 4
+        }
+    },
+    "vendas": []
+}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="banner-header" style="background: linear-gradient(135deg, #1A5CE5, #003BB0); margin-bottom: 20px;">
+    <h1>Venda Concluída! 🎉</h1>
+    <p>Estoque atualizado automaticamente.</p>
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center;">
+    
+    <div class="card" style="width: 350px; font-family: 'Courier New', Courier, monospace; color: #333; background: #FFFDF0; padding: 25px; box-shadow: 0px 5px 15px rgba(0,0,0,0.1);">
+        
+        <h3 style="text-align: center; margin-bottom: 5px; font-weight: bold; font-size: 1.3rem;">SR. PAPEL</h3>
+        <p style="text-align: center; font-size: 0.85rem; border-bottom: 1px dashed #999; padding-bottom: 10px; margin-bottom: 15px;">
+             R. Ator Paulo Gustavo, 265 - Loja 136 - Icaraí, Niterói - RJ, 24230-052<br>
+            Data: {{ recibo.data }}<br>
+            Operador: {{ recibo.operador|upper }}
+        </p>
+
+        <table style="width: 100%; font-size: 0.9rem; margin-bottom: 10px; border: none;">
+            {% for item in recibo.itens %}
+            <tr>
+                <td style="padding: 2px 0;">{{ item.qtd }}x {{ item.nome }}</td>
+                <td style="text-align: right; padding: 2px 0;">R$ {{ "%.2f"|format(item.preco * item.qtd) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div style="border-top: 1px dashed #999; padding-top: 10px; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Total Bruto:</span>
+                <span>R$ {{ "%.2f"|format(recibo.total_bruto) }}</span>
+            </div>
+            
+            {% if recibo.desconto > 0 %}
+            <div style="display: flex; justify-content: space-between; color: #d9534f;">
+                <span>Desconto:</span>
+                <span>- R$ {{ "%.2f"|format(recibo.desconto) }}</span>
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin-top: 8px;">
+                <span>TOTAL:</span>
+                <span>R$ {{ "%.2f"|format(recibo.total_pagar) }}</span>
+            </div>
+        </div>
+
+        <div style="border-top: 1px dashed #999; padding-top: 10px; margin-top: 10px; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Pago em:</span>
+                <span>{{ recibo.forma_pgto|replace('_', ' ') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Recebido:</span>
+                <span>R$ {{ "%.2f"|format(recibo.valor_recebido) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span>Troco:</span>
+                <span>R$ {{ "%.2f"|format(recibo.troco) }}</span>
+            </div>
+        </div>
+
+        <p style="text-align: center; font-size: 0.8rem; border-top: 1px dashed #999; padding-top: 15px; margin-top: 15px;">
+            Obrigado pela preferência!<br>Volte sempre à Sr. Papel.
+        </p>
+    </div>
+
+    <div style="margin-top: 25px; display: flex; gap: 15px;">
+        <button onclick="window.print()" class="btn-confirmar" style="background-color: var(--texto-claro);">🖨️ Imprimir Recibo</button>
+        
+        <a href="/pdv" class="btn-confirmar" style="background-color: var(--sucesso); text-decoration: none;">🛒 Iniciar Nova Venda</a>
+    </div>
+
+</div>
+{% endblock %}

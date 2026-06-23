@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="banner-header" style="background: linear-gradient(135deg, var(--alerta), #FFC107); color: var(--texto-escuro);">
+    <h1>Editar Produto</h1>
+    <p>Atualizando informações do sistema</p>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto; padding: 30px;">
+    <h2 style="margin-bottom: 20px; color: var(--azul-bic); border-bottom: 2px dashed var(--borda); padding-bottom: 10px;">
+        ✏️ SKU: {{ sku }}
+    </h2>
+
+    <form action="/editar_produto/{{ sku }}" method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <div>
+            <label style="font-weight: 600; font-size: 0.9rem; color: var(--texto-claro);">Nome do Produto:</label>
+            <input type="text" name="nome" value="{{ produto.nome }}" required class="input-leitor" style="width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px;">
+        </div>
+        
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--texto-claro);">Preço Varejo (R$):</label>
+                <input type="number" step="0.01" name="varejo" value="{{ produto.preco_varejo }}" required class="input-leitor" style="width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--texto-claro);">Preço Atacado (R$):</label>
+                <input type="number" step="0.01" name="atacado" value="{{ produto.preco_atacado }}" required class="input-leitor" style="width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px;">
+            </div>
+            
+            <div style="flex: 1; min-width: 120px;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--texto-claro);">Quantidade Total:</label>
+                <input type="number" name="qtd" value="{{ produto.quantidade }}" required class="input-leitor" style="width: 100%; box-sizing: border-box; padding: 10px; margin-top: 5px;">
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <a href="/admin" class="btn-confirmar" style="background-color: var(--texto-claro); text-decoration: none; text-align: center; flex: 1; padding: 15px;">Cancelar</a>
+            
+            <button type="submit" class="btn-confirmar" style="background-color: var(--sucesso); flex: 2; padding: 15px; font-size: 1.1rem;">💾 Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

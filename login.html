@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Login - Sr. Papel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--fundo-pastel);">
+    
+    <div class="card" style="width: 350px; padding: 30px;">
+        <h2 style="text-align: center; color: var(--azul-bic); margin-bottom: 20px;">🔒 Acesso Restrito</h2>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alerta-erro" style="background: #FF69B4; color: white; padding: 10px; text-align: center; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;">
+                {{ messages[0] }}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/login" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label style="font-size: 0.85rem; color: var(--texto-claro);">Usuário</label>
+                <input type="text" name="usuario" class="input-leitor" style="width: 100%; box-sizing: border-box;" required>
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--texto-claro);">Senha</label>
+                <input type="password" name="senha" class="input-leitor" style="width: 100%; box-sizing: border-box;" required>
+            </div>
+            
+            <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic); margin-top: 10px; padding: 12px; font-size: 1rem; cursor: pointer;">
+                Entrar no Sistema
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="banner-header">
+    <h1>Sr. Papel</h1>
+    <p>Catálogo Oficial • Atualizado em Tempo Real</p>
+</div>
+
+<div class="action-bar">
+    <a href="https://maps.app.goo.gl/YRZg8v5YY5Qqp1C27" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="btn-pastel">📍Nossa localização </div>
+    </a>
+    <div class="btn-pastel">💬 WhatsApp</div>
+    <div class="btn-pastel">✨ Grupo VIP</div>
+</div>
+
+<h2 style="margin-bottom: 20px; color: var(--azul-bic);">🛍️ Vitrine de Produtos</h2>
+
+<div class="card" style="margin-bottom: 25px;">
+    <form action="/" method="GET" style="display: flex; gap: 10px;">
+        <input type="text" name="busca" class="input-leitor" placeholder="Pesquisar por nome..." style="flex: 1;">
+        <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic);">🔍 Buscar</button>
+        <a href="/" class="btn-confirmar" style="background-color: var(--texto-claro); text-decoration: none; text-align: center;">Limpar</a>
+    </form>
+</div>
+
+<div class="produtos-grid">
+    
+    {% for sku, produto in produtos.items() %}
+    
+    <div class="card produto-card {{ 'esgotado' if produto.quantidade <= 0 else '' }}">
+        <h3>{{ produto.nome }}</h3>
+        <div class="codigo">Código: {{ sku }}</div>
+        <div class="preco"><strong>Varejo: R$ {{ "%.2f"|format(produto.preco_varejo) }}</strong></div>
+        <div class="atacado">Atacado: R$ {{ "%.2f"|format(produto.preco_atacado) }}</div>
+        
+        {% if produto.quantidade > 0 %}
+            <div class="status estoque">✓ Em Estoque</div>
+            
+            <form action="/adicionar_carrinho_cliente/{{ sku }}" method="POST" style="display: flex; gap: 5px;">
+                <input type="number" name="qtd" value="1" min="1" max="{{ produto.quantidade }}" class="input-leitor" style="width: 60px; padding: 5px;">
+                <button type="submit" class="btn-comprar" style="flex: 1;">Adicionar ao Carrinho</button>
+            </form>
+        {% else %}
+            <div class="status esgotado">✗ Esgotado</div>
+            <button class="btn-avise-me">Avise-me quando chegar</button>
+        {% endif %}
+    </div>
+    
+    {% else %}
+        <p style="color: var(--texto-claro);">Nenhum produto encontrado com esse nome.</p>
+    {% endfor %}
+</div>
+{% endblock %}

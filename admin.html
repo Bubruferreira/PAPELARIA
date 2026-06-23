@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div class="card">
+        <h3 style="color: var(--texto-claro); font-size: 1rem;">Total Hoje</h3>
+        <p style="font-size: 1.5rem; font-weight: bold; color: var(--azul-bic);">R$ {{ "%.2f"|format(total_hoje) }}</p>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--texto-claro); font-size: 1rem;">Total no Mês</h3>
+        <p style="font-size: 1.5rem; font-weight: bold; color: var(--azul-bic);">R$ {{ "%.2f"|format(total_mes) }}</p>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--texto-claro); font-size: 1rem;">Produto Top</h3>
+        <p style="font-size: 1.2rem; font-weight: bold; color: var(--sucesso);">{{ nome_top }}</p>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--texto-claro); font-size: 1rem;">Total Vendas</h3>
+        <p style="font-size: 1.5rem; font-weight: bold; color: var(--alerta);">{{ qtd_vendas }}</p>
+    </div>
+</div>
+
+<div class="banner-header">
+    <h1>Dashboard BI</h1>
+    <p>Inteligência de Negócio Sr. Papel</p>
+</div>
+
+<h2 style="margin-bottom: 15px; color: var(--azul-bic);">📈 Curva de Estoque Atual</h2>
+<div class="card" style="margin-bottom: 30px;">
+    <canvas id="graficoEstoque" height="80"></canvas>
+</div>
+
+<h2 style="margin-bottom: 15px; color: var(--azul-bic);">📦 Entrada Rápida de Estoque</h2>
+<div class="card" style="margin-bottom: 30px; border-left: 5px solid var(--sucesso);">
+    <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 10px;">
+        Chegou mercadoria? Bipe produtos <b>já cadastrados</b> para somar ao estoque.
+    </p>
+    <form action="/entrada_estoque" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <input type="text" name="sku" placeholder="Bipar Cód. Barras" required class="input-leitor" style="flex: 2;">
+        <input type="number" name="qtd" placeholder="Qtd Recebida" required class="input-leitor" style="width: 150px;" min="1">
+        <button type="submit" class="btn-confirmar" style="background-color: var(--sucesso);">Adicionar ao Estoque</button>
+    </form>
+</div>
+
+<h2 style="margin-bottom: 15px; color: var(--azul-bic);">➕ Cadastrar Novo Produto</h2>
+<div class="card" style="margin-bottom: 30px;">
+    <form action="/adicionar_produto" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <input type="text" name="sku" placeholder="Cód. Barras" required class="input-leitor" style="flex: 1;">
+        <input type="text" name="nome" placeholder="Nome do Produto" required class="input-leitor" style="flex: 2;">
+        <input type="number" step="0.01" name="varejo" placeholder="R$ Varejo" required class="input-leitor" style="width: 110px;">
+        <input type="number" step="0.01" name="atacado" placeholder="R$ Atacado" required class="input-leitor" style="width: 110px;">
+        <input type="number" name="qtd" placeholder="Qtd Inicial" required class="input-leitor" style="width: 90px;">
+        <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic);">💾 Salvar Produto</button>
+    </form>
+</div>
+
+<h2 style="margin-bottom: 15px; color: var(--azul-bic);">📋 Produtos no Banco de Dados</h2>
+<table>
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Nome</th>
+            <th>Varejo</th>
+            <th>Atacado</th>
+            <th>Estoque</th>
+            <th style="text-align: center;">Ações</th> 
+        </tr>
+    </thead>
+    <tbody>
+        {% for sku, produto in produtos.items() %}
+        <tr>
+            <td>{{ sku }}</td>
+            <td>{{ produto.nome }}</td>
+            <td>R$ {{ "%.2f"|format(produto.preco_varejo) }}</td>
+            <td>R$ {{ "%.2f"|format(produto.preco_atacado) }}</td>
+            
+            {% if produto.quantidade <= 5 %}
+                <td style="color: var(--perigo); font-weight: bold;">{{ produto.quantidade }} (Baixo)</td>
+            {% else %}
+                <td>{{ produto.quantidade }}</td>
+            {% endif %}
+            
+            <td style="text-align: center;">
+                <a href="/editar_produto/{{ sku }}" class="btn-confirmar" style="background-color: var(--alerta); color: var(--texto-escuro); padding: 5px 10px; text-decoration: none; font-size: 0.8rem; margin-right: 5px;">✏️ Editar</a>
+                
+                <a href="/excluir_produto/{{ sku }}" class="btn-confirmar" style="background-color: var(--perigo); padding: 5px 10px; text-decoration: none; font-size: 0.8rem;" onclick="return confirm('Tem certeza que deseja apagar o produto {{ produto.nome }} permanentemente?')">🗑️ Excluir</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align: center; color: var(--texto-claro); padding: 20px;">Nenhum produto cadastrado no banco de dados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Montagem dinâmica dos Arrays consumindo o dicionário do Python(Jinja2)
+    const nomesProdutos = [
+        {% for sku, produto in produtos.items() %}
+            "{{ produto.nome }}",
+        {% endfor %}
+    ];
+
+    const qtdEstoque = [
+        {% for sku, produto in produtos.items() %}
+            {{ produto.quantidade }},
+        {% endfor %}
+    ];
+
+    // Lógica para colorir a barra de vermelho caso o estoque esteja crítico
+    const coresBarras = qtdEstoque.map(qtd => qtd <= 5 ? 'var(--perigo)' : 'var(--azul-bic)');
+
+    // Renderização do Gráfico
+    const ctx = document.getElementById('graficoEstoque').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: nomesProdutos,
+            datasets: [{
+                label: 'Unidades em Estoque',
+                data: qtdEstoque,
+                backgroundColor: coresBarras,
+                borderRadius: 6 // Arredonda os topos das barras
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false } // Oculta a legenda desnecessária
+            },
+            scales: {
+                y: { beginAtZero: true } // Força o eixo Y a começar do 0
+            }
+        }
+    });
+</script>
+{% endblock %}
