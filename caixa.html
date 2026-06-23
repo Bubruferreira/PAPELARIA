@@ -101,6 +101,19 @@
                             <option value="Cartao_Credito">💳 Cartão de Crédito</option>
                             <option value="Cartao_Debito">💳 Cartão de Débito</option>
                         </select>
+
+                        <label><b>Parcelamento:</b></label>
+<select name="parcelas" class="input-leitor" style="padding: 10px; margin-bottom: 10px;" id="select-parcelas" onchange="calcularCaixa()">
+    <option value="1">1x (Sem juros)</option>
+    <option value="2">2x (Sem juros)</option>
+    <option value="3">3x (Sem juros)</option>
+    <option value="4">4x (Sem juros)</option>
+    <option value="5">5x (Sem juros)</option>
+    <option value="6">6x (Sem juros)</option>
+</select>
+<div id="info-parcela" style="font-size: 0.85rem; color: var(--azul-bic); margin-bottom: 10px;">
+    Valor da parcela: R$ 0.00
+</div>
                         
                         <label><b>Desconto:</b></label>
                         <div style="display: flex; gap: 10px;">
@@ -189,6 +202,15 @@
                 let troco = recebido - totalFinal;
                 
                 displayTotalPagar.innerText = "R$ " + totalFinal.toFixed(2);
+
+                // --- AQUI VEM O SEGUNDO PASSO DO PARCELAMENTO ---
+                let selectParcelas = document.getElementById('select-parcelas');
+                let infoParcela = document.getElementById('info-parcela');
+                let numParcelas = parseInt(selectParcelas.value) || 1;
+                let valorParcela = totalFinal / numParcelas;
+                
+                infoParcela.innerText = "Valor da parcela: R$ " + valorParcela.toFixed(2);
+                // -------------------------------------------------
                 
                 if(troco > 0) {
                     displayTroco.innerText = "R$ " + troco.toFixed(2);
