@@ -399,15 +399,31 @@ def admin():
     total_hoje = 0.0
     total_mes = 0.0
     qtd_vendas = len(vendas)
-    nome_top = "Nenhum Produto"
+    
+    # 1. Criamos um "caderno de anotações" para contar os produtos
+    contagem_produtos = {}
     
     for venda in vendas:
         valor = venda.get('total_pagar', 0)
         total_hoje += valor
         total_mes += valor
         
+        # 2. Em cada venda, olhamos para os itens e somamos as quantidades
+        for item in venda.get('itens', []):
+            nome = item.get('nome')
+            qtd = item.get('qtd', 0)
+            contagem_produtos[nome] = contagem_produtos.get(nome, 0) + qtd
+            
+    # 3. Descobrimos qual foi o produto com a maior contagem!
+    if contagem_produtos:
+        # Pega no nome do produto que tem o maior número associado a ele
+        nome_top = max(contagem_produtos, key=contagem_produtos.get)
+    else:
+        nome_top = "Nenhum Produto"
+        
     return render_template('admin.html', produtos=produtos, total_hoje=total_hoje, 
                            total_mes=total_mes, nome_top=nome_top, qtd_vendas=qtd_vendas)
+    
 
 @app.route('/historico')
 @gerencia_obrigatoria
