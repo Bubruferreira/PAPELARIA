@@ -262,6 +262,7 @@ def finalizar_venda():
         'desconto': desconto,
         'total_pagar': total_pagar,
         'forma_pgto': request.form.get('pagamento'),
+        'parcelas': request.form.get('parcelas'),
         'valor_recebido': valor_recebido,
         'troco': max(0, valor_recebido - total_pagar)
     }
@@ -423,7 +424,6 @@ def admin():
         
     return render_template('admin.html', produtos=produtos, total_hoje=total_hoje, 
                            total_mes=total_mes, nome_top=nome_top, qtd_vendas=qtd_vendas)
-    
 
 @app.route('/historico')
 @gerencia_obrigatoria
