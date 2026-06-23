@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="banner-header">
+    <h1>Cadastro Inteligente</h1>
+    <p>Novo modelo com precificação automática</p>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <form action="/adicionar_produto_inteligente" method="POST" id="formCadastro">
+        
+        <h3 style="color: var(--azul-bic); margin-bottom: 15px;">Informações Básicas</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <select name="categoria" id="categoria" class="input-leitor" style="flex: 1;" required>
+                <option value="PAP">Papelaria</option>
+                <option value="CAD">Caderno</option>
+                <option value="CAN">Caneta</option>
+                <option value="INF">Informática</option>
+                <option value="ESC">Material Escolar</option>
+            </select>
+            <input type="text" name="nome" placeholder="Nome do Produto" class="input-leitor" style="flex: 2;" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="text" name="sku" id="sku" placeholder="Código (ex: PAP-001)" class="input-leitor" style="flex: 1;" required>
+            <input type="number" name="qtd" placeholder="Qtd Inicial" class="input-leitor" style="width: 120px;" required>
+            <input type="number" name="estoque_minimo" placeholder="Estoque Mínimo" class="input-leitor" style="width: 140px;" required>
+        </div>
+
+        <h3 style="color: var(--azul-bic); margin-bottom: 15px;">Informações Financeiras</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="number" step="0.01" name="custo" id="custo" placeholder="Preço Custo (R$)" class="input-leitor" style="flex: 1;" required>
+            <input type="number" step="0.01" name="varejo" id="varejo" placeholder="Preço Varejo (R$)" class="input-leitor" style="flex: 1;" required>
+            <input type="number" step="0.01" name="atacado" id="atacado" placeholder="Preço Atacado (R$)" class="input-leitor" style="flex: 1;" required>
+        </div>
+
+        <div class="card" style="background: var(--fundo-pastel); margin-bottom: 20px;">
+            <p>Lucro Varejo: <b id="lucroVarejo">R$ 0.00</b> | Margem: <b id="margemVarejo">0%</b></p>
+            <p>Lucro Atacado: <b id="lucroAtacado">R$ 0.00</b> | Margem: <b id="margemAtacado">0%</b></p>
+        </div>
+
+        <button type="submit" class="btn-confirmar" style="width: 100%; background-color: var(--sucesso);">💾 Salvar Novo Produto</button>
+    </form>
+</div>
+
+<script>
+    const inputs = ['custo', 'varejo', 'atacado'];
+    inputs.forEach(id => document.getElementById(id).addEventListener('input', calcular));
+
+    function calcular() {
+        const custo = parseFloat(document.getElementById('custo').value) || 0;
+        const varejo = parseFloat(document.getElementById('varejo').value) || 0;
+        const atacado = parseFloat(document.getElementById('atacado').value) || 0;
+
+        if (custo > 0) {
+            document.getElementById('lucroVarejo').innerText = "R$ " + (varejo - custo).toFixed(2);
+            document.getElementById('margemVarejo').innerText = (((varejo - custo) / custo) * 100).toFixed(0) + "%";
+            document.getElementById('lucroAtacado').innerText = "R$ " + (atacado - custo).toFixed(2);
+            document.getElementById('margemAtacado').innerText = (((atacado - custo) / custo) * 100).toFixed(0) + "%";
+        }
+    }
+</script>
+{% endblock %}
