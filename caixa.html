@@ -6,12 +6,47 @@
     <p>Registro de Saída de Estoque e Pagamento</p>
 </div>
 
-<h2 style="margin-bottom: 15px; color: var(--azul-bic);">🔍 Busca por Leitor (Bipar)</h2>
+<h2 style="margin-bottom: 15px; color: var(--azul-bic);">🔍 Adicionar Produto</h2>
 <div class="card" style="margin-bottom: 30px;">
+    
     <form action="/adicionar_carrinho" method="POST" style="display: flex; gap: 15px; align-items: center;">
-        <input type="text" name="sku" class="input-leitor" placeholder="Passe o leitor de código de barras aqui..." style="flex: 1;" autofocus required>
-        <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic);">Adicionar à Venda</button>
+        <input type="text" name="termo" class="input-leitor" placeholder="Bipe o código ou digite o nome do produto..." style="flex: 1;" value="{{ busca }}" autofocus autocomplete="off">
+        <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic);">Buscar / Bipar</button>
+        
+        {% if busca %}
+            <a href="/pdv" class="btn-confirmar" style="background-color: var(--texto-claro); text-decoration: none;">Limpar</a>
+        {% endif %}
     </form>
+
+    {% if resultados_busca %}
+        <div style="margin-top: 20px; background-color: var(--fundo-pastel); padding: 15px; border-radius: 8px; border: 1px solid var(--borda);">
+            <h4 style="margin-bottom: 10px; color: var(--azul-bic);">Encontrados para "{{ busca }}":</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                {% for sku, prod in resultados_busca.items() %}
+                    <tr style="border-bottom: 1px solid var(--borda);">
+                        <td style="padding: 10px 0;">
+                            <b>{{ prod.nome }}</b><br>
+                            <span style="font-size: 0.85rem; color: var(--texto-claro);">Estoque: {{ prod.quantidade }} | Código: {{ sku }}</span>
+                        </td>
+                        <td style="text-align: right; font-weight: bold; color: var(--sucesso);">
+                            R$ {{ "%.2f"|format(prod.preco_varejo) }}
+                        </td>
+                        <td style="text-align: right; padding-left: 15px;">
+                            <form action="/adicionar_carrinho" method="POST" style="margin: 0;">
+                                <input type="hidden" name="sku" value="{{ sku }}">
+                                <button type="submit" class="btn-confirmar" style="padding: 6px 15px; font-size: 0.9rem; background-color: var(--sucesso); color: white; border: none; cursor: pointer;">+ Adicionar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% elif busca %}
+        <div style="margin-top: 15px; padding: 10px; background-color: #ffe5e5; color: var(--perigo); border-radius: 5px; text-align: center;">
+            Nenhum produto com estoque encontrado para "<b>{{ busca }}</b>".
+        </div>
+    {% endif %}
+
 </div>
 
 <h2 style="margin-bottom: 15px; color: var(--azul-bic);">🛒 Carrinho e Pagamento</h2>
@@ -33,21 +68,15 @@
                 {% for sku, item in carrinho.items() %}
                 <tr>
                     <td>{{ item.nome }}</td>
+                    
                     <td>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <form action="/alterar_qtd/{{ sku }}" method="POST">
-                                <input type="hidden" name="acao" value="diminuir">
-                                <button type="submit" class="btn-confirmar" style="padding: 2px 10px; background: var(--texto-claro);">−</button>
-                            </form>
-                            
-                            <b>{{ item.qtd }}x</b>
-                            
-                            <form action="/alterar_qtd/{{ sku }}" method="POST">
-                                <input type="hidden" name="acao" value="aumentar">
-                                <button type="submit" class="btn-confirmar" style="padding: 2px 10px; background: var(--azul-bic);">+</button>
-                            </form>
-                        </div>
+                        <form action="/atualizar_qtd_direto/{{ sku }}" method="POST" style="margin: 0;">
+                            <input type="number" name="nova_qtd" value="{{ item.qtd }}" min="1" 
+                                   style="width: 70px; height: 38px; padding: 5px; border: 2px solid var(--azul-bic); border-radius: 6px; font-weight: 600; font-size: 1.1rem; text-align: center; color: var(--texto-escuro); outline: none;"
+                                   onchange="this.form.submit()">
+                        </form>
                     </td>
+                    
                     <td>R$ {{ "%.2f"|format(item.preco) }}</td>
                     <td><b>R$ {{ "%.2f"|format(item.preco * item.qtd) }}</b></td>
                     <td style="text-align: center;">
@@ -138,7 +167,7 @@
         
     {% else %}
         <div style="min-height: 100px; display: flex; align-items: center; justify-content: center; color: var(--texto-claro);">
-            <p>O Carrinho está vazio. Bipe um produto para começar.</p>
+            <p>O Carrinho está vazio. Bipe ou pesquise um produto para começar.</p>
         </div>
     {% endif %}
 
