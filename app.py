@@ -110,53 +110,99 @@ def logout():
 # ==========================================
 # FLUXO PDV (LOJA FÍSICA) - Usa 'carrinho'
 # ==========================================
+
 @app.route('/pdv')
 @login_obrigatorio
 def pdv_caixa():
     carrinho = session.get('carrinho', {})
     total = sum(i['preco'] * i['qtd'] for i in carrinho.values())
-    return render_template('caixa.html', carrinho=carrinho, total=total)
+    
+    # --- NOVA LÓGICA DE BUSCA POR NOME ---
+    busca = request.args.get('busca', '').lower().strip()
+    resultados_busca = {}
+    
+    if busca:
+        banco = carregar_banco()
+        produtos = banco.get('produtos', {})
+        # Filtra os produtos que tem a palavra pesquisada no nome E que tem estoque > 0
+        resultados_busca = {
+            sku: p for sku, p in produtos.items() 
+            if busca in p['nome'].lower() and p['quantidade'] > 0
+        }
+    # -------------------------------------
+    
+    # Agora enviamos os resultados da busca para a tela também!
+    return render_template('caixa.html', carrinho=carrinho, total=total, resultados_busca=resultados_busca, busca=busca)
 
 @app.route('/adicionar_carrinho', methods=['POST'])
 @login_obrigatorio
 def adicionar_carrinho():
-    # 1. O .strip() é a tesoura mágica que corta espaços e o "Enter" do leitor!
-    sku_bipado = request.form.get('sku', '').strip()
+    # 1. Pega o que a funcionária digitou ou bipou na barra única
+    termo = request.form.get('termo', '').strip()
+    
+    # 2. Pega o clique do botão "+ Adicionar" caso ela tenha usado a lista de pesquisa
+    sku_direto = request.form.get('sku')
+    
+    # Define quem o sistema vai usar
+    codigo_final = sku_direto if sku_direto else termo
     
     banco = carregar_banco()
-    prod = banco.get('produtos', {}).get(sku_bipado)
+    produtos = banco.get('produtos', {})
+    prod = produtos.get(codigo_final)
     
     if prod:
+        # AÇÃO A: ACHOU O CÓDIGO! (Joga no carrinho na hora)
         if prod['quantidade'] > 0:
             carrinho_pdv = session.get('carrinho', {})
             
-            if sku_bipado in carrinho_pdv:
-                if carrinho_pdv[sku_bipado]['qtd'] < prod['quantidade']: 
-                    carrinho_pdv[sku_bipado]['qtd'] += 1
+            if codigo_final in carrinho_pdv:
+                if carrinho_pdv[codigo_final]['qtd'] < prod['quantidade']: 
+                    carrinho_pdv[codigo_final]['qtd'] += 1
                 else: 
                     flash("❌ Estoque insuficiente para este item!")
             else: 
-                carrinho_pdv[sku_bipado] = {
-                    'nome': prod['nome'], 
-                    'preco': prod['preco_varejo'], 
-                    'qtd': 1
-                }
+                carrinho_pdv[codigo_final] = {'nome': prod['nome'], 'preco': prod['preco_varejo'], 'qtd': 1}
             
             session['carrinho'] = carrinho_pdv
             session.modified = True
         else:
             flash("❌ Produto esgotado no estoque!")
-    else: 
-        # Mostra exatamente o que o leitor enviou para ajudar a debugar
-        flash(f"⚠️ Produto não encontrado! (Código lido: '{sku_bipado}')")
+            
+        return redirect(url_for('pdv_caixa'))
         
-    return redirect(url_for('pdv_caixa'))
+    else:
+        # AÇÃO B: NÃO É UM CÓDIGO DE BARRAS! (Pesquisa pelo nome)
+        # Se não tiver vazio, redireciona ativando a pesquisa
+        if termo:
+            return redirect(url_for('pdv_caixa', busca=termo))
+        return redirect(url_for('pdv_caixa'))
 
-@app.route('/alterar_qtd/<sku>', methods=['POST'])
+@app.route('/atualizar_qtd_direto/<sku>', methods=['POST'])
 @login_obrigatorio
-def alterar_qtd(sku):
+def atualizar_qtd_direto(sku):
     carrinho = session.get('carrinho', {})
-    acao = request.form.get('acao')
+    
+    try:
+        nova_qtd = int(request.form.get('nova_qtd', 1))
+    except ValueError:
+        nova_qtd = 1
+        
+    banco = carregar_banco()
+    produto = banco.get('produtos', {}).get(sku)
+    
+    if sku in carrinho and produto:
+        if nova_qtd <= 0:
+            del carrinho[sku]
+        elif nova_qtd <= produto['quantidade']:
+            carrinho[sku]['qtd'] = nova_qtd
+        else:
+            # Trava de segurança para digitação manual!
+            carrinho[sku]['qtd'] = produto['quantidade']
+            flash(f"❌ O estoque máximo deste item é {produto['quantidade']}!")
+            
+    session['carrinho'] = carrinho
+    session.modified = True
+    return redirect(url_for('pdv_caixa'))
     
     # 1. Carrega o banco para saber o limite de estoque real
     banco = carregar_banco()
