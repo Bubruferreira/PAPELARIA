@@ -33,7 +33,8 @@
                 
                 <td style="padding: 15px 0;">
                     <span style="background-color: var(--fundo-pastel); padding: 5px 10px; border-radius: 5px; font-size: 0.9rem;">
-                        {{ v.forma_pgto }}
+                        {{ v.forma_pgto }} 
+                        {% if v.parcelas %} ({{ v.parcelas }}x) {% endif %}
                     </span>
                 </td>
                 
