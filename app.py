@@ -86,10 +86,22 @@ def catalogo():
     banco = carregar_banco()
     produtos = banco.get('produtos', {})
     busca = request.args.get('busca', '').lower()
+    
+    # 1. Filtra se houver busca
     if busca:
-        produtos = {sku: p for sku, p in produtos.items() if busca in p['nome'].lower()}
-    return render_template('catalogo.html', produtos=produtos)
+        produtos_filtrados = {sku: p for sku, p in produtos.items() if busca in p['nome'].lower()}
+    else:
+        produtos_filtrados = produtos
 
+    # 2. Converte para lista para poder ordenar
+    lista_produtos = list(produtos_filtrados.items())
+
+    # 3. Ordenação inteligente: 
+    # Primeiro coloca os que têm quantidade > 0 (esgotados vão para o final)
+    lista_produtos.sort(key=lambda item: item[1]['quantidade'] <= 0)
+
+    return render_template('catalogo.html', produtos=dict(lista_produtos))
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
