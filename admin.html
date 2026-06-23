@@ -31,30 +31,6 @@
     <canvas id="graficoEstoque" height="80"></canvas>
 </div>
 
-<h2 style="margin-bottom: 15px; color: var(--azul-bic);">📦 Entrada Rápida de Estoque</h2>
-<div class="card" style="margin-bottom: 30px; border-left: 5px solid var(--sucesso);">
-    <p style="font-size: 0.85rem; color: var(--texto-claro); margin-bottom: 10px;">
-        Chegou mercadoria? Bipe produtos <b>já cadastrados</b> para somar ao estoque.
-    </p>
-    <form action="/entrada_estoque" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-        <input type="text" name="sku" placeholder="Bipar Cód. Barras" required class="input-leitor" style="flex: 2;">
-        <input type="number" name="qtd" placeholder="Qtd Recebida" required class="input-leitor" style="width: 150px;" min="1">
-        <button type="submit" class="btn-confirmar" style="background-color: var(--sucesso);">Adicionar ao Estoque</button>
-    </form>
-</div>
-
-<h2 style="margin-bottom: 15px; color: var(--azul-bic);">➕ Cadastrar Novo Produto</h2>
-<div class="card" style="margin-bottom: 30px;">
-    <form action="/adicionar_produto" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-        <input type="text" name="sku" placeholder="Cód. Barras" required class="input-leitor" style="flex: 1;">
-        <input type="text" name="nome" placeholder="Nome do Produto" required class="input-leitor" style="flex: 2;">
-        <input type="number" step="0.01" name="varejo" placeholder="R$ Varejo" required class="input-leitor" style="width: 110px;">
-        <input type="number" step="0.01" name="atacado" placeholder="R$ Atacado" required class="input-leitor" style="width: 110px;">
-        <input type="number" name="qtd" placeholder="Qtd Inicial" required class="input-leitor" style="width: 90px;">
-        <button type="submit" class="btn-confirmar" style="background-color: var(--azul-bic);">💾 Salvar Produto</button>
-    </form>
-</div>
-
 <h2 style="margin-bottom: 15px; color: var(--azul-bic);">📋 Produtos no Banco de Dados</h2>
 <table>
     <thead>
