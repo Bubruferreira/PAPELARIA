@@ -1,12 +1,12 @@
 {
     "usuarios": {
         "gerente": {
-            "senha": "123",
+            "senha": "1234",
             "cargo": "gerencia",
             "nome": "Gerente Principal"
         },
         "caixa": {
-            "senha": "123",
+            "senha": "1234",
             "cargo": "operador",
             "nome": "Operador de Caixa"
         }
