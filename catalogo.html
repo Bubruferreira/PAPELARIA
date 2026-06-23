@@ -35,14 +35,22 @@
         <div class="atacado">Atacado: R$ {{ "%.2f"|format(produto.preco_atacado) }}</div>
         
         {% if produto.quantidade > 0 %}
-            <div class="status estoque">✓ Em Estoque</div>
+            
+            {% if produto.quantidade <= 3 %}
+                <div class="status" style="color: var(--perigo); font-weight: bold; background: #FFF5F7; padding: 4px 8px; border-radius: 6px; margin-bottom: 10px; display: block;">
+                    🔥 Apenas {{ produto.quantidade }} unidades restantes!
+                </div>
+            {% else %}
+                <div class="status estoque">✓ Em Estoque</div>
+            {% endif %}
             
             <form action="/adicionar_carrinho_cliente/{{ sku }}" method="POST" style="display: flex; gap: 5px;">
                 <input type="number" name="qtd" value="1" min="1" max="{{ produto.quantidade }}" class="input-leitor" style="width: 60px; padding: 5px;">
                 <button type="submit" class="btn-comprar" style="flex: 1;">Adicionar ao Carrinho</button>
             </form>
+            
         {% else %}
-            <div class="status esgotado">✗ Esgotado</div>
+            <div class="status esgotado">❌ Esgotado</div>
             <button class="btn-avise-me">Avise-me quando chegar</button>
         {% endif %}
     </div>
